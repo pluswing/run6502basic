@@ -1,9 +1,11 @@
+use log::{warn};
+
 pub struct Bus {
     cpu_ram: [u8; 1024 * 4]
 }
 
 impl Bus {
-    pub fn new(apu: NesAPU) -> Self {
+    pub fn new() -> Self {
         Self {
             cpu_ram: [0; 1024 * 4],
         }
@@ -20,7 +22,7 @@ impl Mem for Bus {
         match addr {
             0x0000..=0x0FFF => {
                 // RAM
-                self.cpu_ram[addr]
+                self.cpu_ram[addr as usize]
             }
             _ => {
                 warn!("Ignoreing mem access at {:X}", addr);
@@ -33,11 +35,10 @@ impl Mem for Bus {
         match addr {
             0x0000..=0x0FFF => {
                 // RAM
-                self.cpu_ram[addr] = data;
+                self.cpu_ram[addr as usize] = data;
             }
             _ => {
-                warn!("Ignoreing mem write access at {:X}", addr, value);
-                0
+                warn!("Ignoreing mem write access at {:X} => {:X}", addr, data);
             }
         }
     }
