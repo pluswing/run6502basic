@@ -225,7 +225,8 @@ impl CPU {
         self.register_y = 0;
         self.status = FLAG_INTERRRUPT | FLAG_BREAK2;
         self.stack_pointer = 0xFD;
-        self.program_counter = self.mem_read_u16(0xFFFC);
+        // TODO
+        self.program_counter = 0xC000;
     }
 
     pub fn run(&mut self) {
@@ -238,6 +239,7 @@ impl CPU {
                 Some(op) => {
                     self.add_cycles = 0;
 
+                    println!("{:04X} {:02X} {}", self.program_counter - 1, op.code, op.name);
                     call(self, &op);
 
                     match op.cycle_calc_mode {
@@ -294,7 +296,6 @@ impl CPU {
         } else {
             self.status | FLAG_OVERFLOW
         };
-        todo!("sbx")
     }
 
     pub fn jam(&mut self, mode: &AddressingMode) {
@@ -316,7 +317,6 @@ impl CPU {
         self.register_x = self.register_a;
         self._push(self.register_a);
         self.update_zero_and_negative_flags(self.register_a);
-        todo!("lae")
     }
 
     pub fn shx(&mut self, mode: &AddressingMode) {
@@ -324,7 +324,6 @@ impl CPU {
         let addr = self.get_operand_address(mode);
         let h = ((addr & 0xFF00) >> 8) as u8;
         self.mem_write(addr, (self.register_x & h).wrapping_add(1));
-        todo!("shx")
     }
 
     pub fn shy(&mut self, mode: &AddressingMode) {
@@ -334,14 +333,12 @@ impl CPU {
         let addr = self.get_operand_address(mode);
         let h = ((addr & 0xFF00) >> 8) as u8;
         self.mem_write(addr, (self.register_y & h).wrapping_add(1));
-        todo!("shy")
     }
 
     pub fn ane(&mut self, mode: &AddressingMode) {
         // TXA + AND #{imm}
         self.txa(mode);
         self.and(mode);
-        todo!("ane")
     }
 
     pub fn shs(&mut self, mode: &AddressingMode) {
@@ -351,7 +348,6 @@ impl CPU {
         let addr = self.get_operand_address(mode);
         let h = ((addr & 0xFF00) >> 8) as u8;
         self.mem_write(addr, self.register_a & self.register_x & h);
-        todo!("shs")
     }
 
     pub fn rra(&mut self, mode: &AddressingMode) {
