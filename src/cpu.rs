@@ -239,7 +239,7 @@ impl CPU {
                 Some(op) => {
                     self.add_cycles = 0;
 
-                    println!("{:04X} {:02X} {}", self.program_counter - 1, op.code, op.name);
+                    trace(self);
                     call(self, &op);
 
                     match op.cycle_calc_mode {
@@ -917,7 +917,7 @@ pub fn trace(cpu: &mut CPU) -> String {
         status
     );
 
-    trace!("{}", log);
+    println!("{}", log);
 
     log
 }
