@@ -226,7 +226,7 @@ impl CPU {
         self.status = FLAG_INTERRRUPT | FLAG_BREAK2;
         self.stack_pointer = 0xFD;
         // TODO
-        self.program_counter = 0xC000;
+        self.program_counter = 0xE0D2; // COLD_START
     }
 
     pub fn run(&mut self) {

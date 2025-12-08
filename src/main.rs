@@ -14,6 +14,7 @@ fn main() {
     let mut f = File::open(filepath).expect("no file found");
     let metadata = std::fs::metadata(filepath).expect("unable to read metadata");
     let mut buffer = vec![0; metadata.len() as usize];
+    println!("{} is {} byte!", filepath, metadata.len());
     f.read(&mut buffer).expect("buffer overflow");
 
     let mut cpu = CPU::new(Bus::new(&buffer));

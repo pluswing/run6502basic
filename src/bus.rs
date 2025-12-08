@@ -26,11 +26,19 @@ impl Mem for Bus {
                 // RAM
                 self.cpu_ram[addr as usize]
             }
-            0xC000..=0xDFFF => {
+            // cbmbasic1に合わせて、お尻を調整。
+            0xC000..=0xE1E1 => {
+              // 0xC000..=0xDFFF = 8192 byte => 8KB
+              // actually 8673 byte
+              // 49152(0xC000) + 8673 = 57825 = 0xE1E1
               self.basic_rom[(addr - 0xC000) as usize]
             }
+            0xFFD2 => {
+              // CHROUT, MONCOUT
+              // -> 画面出力系
+            }
             _ => {
-                warn!("Ignoreing mem access at {:X}", addr);
+                todo!("Ignoreing mem read access at {:X}", addr);
                 0
             }
         }
@@ -42,8 +50,12 @@ impl Mem for Bus {
                 // RAM
                 self.cpu_ram[addr as usize] = data;
             }
+            0xFFD2 => {
+              // CHROUT, MONCOUT
+              // -> 画面出力系
+            }
             _ => {
-                warn!("Ignoreing mem write access at {:X} => {:X}", addr, data);
+                todo!("Ignoreing mem write access at {:X} => {:X}", addr, data);
             }
         }
     }
