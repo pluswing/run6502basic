@@ -231,6 +231,26 @@ impl CPU {
 
     pub fn run(&mut self) {
         loop {
+            // カーネル呼び出しのフック
+            match (self.program_counter) {
+              0xFFD2 => {
+                // CHROUT, MONCOUT
+                // -> 画面出力系
+                // Aレジスタの値を取る
+                // asciiに変換する
+                // 画面にprintする
+                // かえる
+                let char_value = self.register_a as char;
+                println!("CALL CHROUT {} => {}", self.register_a, char_value);
+                self.rts(&AddressingMode::Absolute);
+              }
+              0xFFCF => {
+                // TODO aレジスタに最後の出力を書き戻してrtsする。
+                self.rts(&AddressingMode::Absolute);
+              }
+              _ => {}
+            }
+
             let opscode = self.mem_read(self.program_counter);
             self.program_counter += 1;
 
