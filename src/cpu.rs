@@ -245,7 +245,16 @@ impl CPU {
                 self.rts(&AddressingMode::Absolute);
               }
               0xFFCF => {
+                // CHRIN
                 // TODO aレジスタに最後の出力を書き戻してrtsする。
+                // キーボードからの入力は特別な方法で処理されます。
+                // まず、カーソルが点灯し、
+                // キーボードでキャリッジリターンが入力されるまで点滅します。
+                // 行内のすべての文字（最大88文字）はBASICの入力バッファに格納されます。
+                // これらの文字は、このルーチンを文字ごとに1回呼び出すことで、一度に1文字ずつ取得できます。
+                // キャリッジリターンが取得されると、行全体の処理が完了します。
+                // 次にこのルーチンが呼び出されると、カーソルが点滅するというプロセスが再開されます。
+                self.register_a = 13;
                 self.rts(&AddressingMode::Absolute);
               }
               _ => {}
@@ -259,7 +268,7 @@ impl CPU {
                 Some(op) => {
                     self.add_cycles = 0;
 
-                    trace(self);
+                    // trace(self);
                     call(self, &op);
 
                     match op.cycle_calc_mode {

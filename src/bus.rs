@@ -39,10 +39,7 @@ impl Mem for Bus {
               // CLALL
               0x60 // RTS
             }
-            0xFFCF => {
-              // CHRIN
-              0x60 // RTS
-            }
+
 
             // // BREAK
             // 0xFF00 => {
