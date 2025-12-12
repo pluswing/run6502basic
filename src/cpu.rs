@@ -2,6 +2,7 @@ use log::{debug, info, trace};
 
 use crate::opscodes::{call, CPU_OPS_CODES};
 use crate::bus::{Bus, Mem};
+use std::io::{self, Write};
 
 #[derive(Debug, Clone, PartialEq)]
 #[allow(non_camel_case_types)]
@@ -81,6 +82,9 @@ pub struct CPU {
     pub bus: Bus,
 
     add_cycles: u8,
+
+    line_input: String,
+    line_index: usize,
 }
 
 impl Mem for CPU {
@@ -104,6 +108,9 @@ impl CPU {
             stack_pointer: 0xFD,
             bus: bus,
             add_cycles: 0,
+
+            line_input: "".to_string(),
+            line_index: 0,
         }
     }
 
@@ -232,7 +239,7 @@ impl CPU {
     pub fn run(&mut self) {
         loop {
             // カーネル呼び出しのフック
-            match (self.program_counter) {
+            match self.program_counter {
               0xFFD2 => {
                 // CHROUT, MONCOUT
                 // -> 画面出力系
@@ -241,12 +248,11 @@ impl CPU {
                 // 画面にprintする
                 // かえる
                 let char_value = self.register_a as char;
-                println!("CALL CHROUT {} => {}", self.register_a, char_value);
+                print!("{}", char_value);
                 self.rts(&AddressingMode::Absolute);
               }
               0xFFCF => {
                 // CHRIN
-                // TODO aレジスタに最後の出力を書き戻してrtsする。
                 // キーボードからの入力は特別な方法で処理されます。
                 // まず、カーソルが点灯し、
                 // キーボードでキャリッジリターンが入力されるまで点滅します。
@@ -254,8 +260,29 @@ impl CPU {
                 // これらの文字は、このルーチンを文字ごとに1回呼び出すことで、一度に1文字ずつ取得できます。
                 // キャリッジリターンが取得されると、行全体の処理が完了します。
                 // 次にこのルーチンが呼び出されると、カーソルが点滅するというプロセスが再開されます。
-                self.register_a = 13;
-                self.rts(&AddressingMode::Absolute);
+                if self.line_input.len() == 0 {
+                  // 1行入力させる
+                  print!("> ");
+                  io::stdout().flush();
+                  std::io::stdin()
+                    .read_line(&mut self.line_input)
+                    .unwrap();
+                  self.line_input = self.line_input.replace("\n", "\r\n");
+                  self.line_index = 0;
+                  continue;
+                } else {
+                  // 1文字づつ返す
+                  if self.line_input.len() <= self.line_index {
+                    self.line_input = "".to_string();
+                    continue;
+                  } else {
+                    let c = self.line_input.chars().nth(self.line_index).unwrap();
+                    self.register_a = c as u8;
+                    println!("SEND {}", c);
+                    self.line_index += 1;
+                    self.rts(&AddressingMode::Absolute);
+                  }
+                }
               }
               _ => {}
             }
