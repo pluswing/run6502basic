@@ -34,24 +34,6 @@ impl Mem for Bus {
               // 49152(0xC000) + 8673 = 57825 = 0xE1E1
               self.basic_rom[(addr - 0xC000) as usize]
             }
-
-            0xFFE7 => {
-              // CLALL
-              0x60 // RTS
-            }
-
-
-            // // BREAK
-            // 0xFF00 => {
-            //   0x60 // RTS
-            // }
-            // 0xFFFE => {
-            //   // BREAK TODO PET用に変える必要があるかも。
-            //   0x00
-            // }
-            // 0xFFFF => {
-            //   0xFF
-            // }
             _ => {
                 todo!("Ignoreing mem read access at {:X}", addr);
                 0

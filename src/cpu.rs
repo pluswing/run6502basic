@@ -240,6 +240,12 @@ impl CPU {
         loop {
             // カーネル呼び出しのフック
             match self.program_counter {
+              0xFFE7 => {
+                // CLALL
+                // 初期化をするルーチンらしい
+                // 何もしなくてよさそう。
+                self.rts(&AddressingMode::Absolute);
+              }
               0xFFD2 => {
                 // CHROUT, MONCOUT
                 // -> 画面出力系
@@ -278,11 +284,20 @@ impl CPU {
                   } else {
                     let c = self.line_input.chars().nth(self.line_index).unwrap();
                     self.register_a = c as u8;
-                    println!("SEND {}", c);
                     self.line_index += 1;
                     self.rts(&AddressingMode::Absolute);
                   }
                 }
+              }
+              0xFFE1 => {
+                // STOP
+                // self.register_a = 0;
+                self.rts(&AddressingMode::Absolute);
+              }
+              0xFFCC => {
+                // CLRCHN
+                // self.register_a = 0;
+                self.rts(&AddressingMode::Absolute);
               }
               _ => {}
             }
