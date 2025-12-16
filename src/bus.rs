@@ -48,9 +48,8 @@ impl Mem for Bus {
                 let mirror_addr = addr % 0x1000;
                 self.cpu_ram[mirror_addr as usize] = data;
             }
-            0xFFD2 => {
-              // CHROUT, MONCOUT
-              // -> 画面出力系
+            0x8000..=0x8FFF => {
+                println!("SCREEN {:04X} {:02X} {} {}", addr, data, data, data as char);
             }
             _ => {
                 todo!("Ignoreing mem write access at {:X} => {:X}", addr, data);

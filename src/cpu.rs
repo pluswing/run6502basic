@@ -233,7 +233,8 @@ impl CPU {
         self.status = FLAG_INTERRRUPT | FLAG_BREAK2;
         self.stack_pointer = 0xFD;
         // TODO
-        self.program_counter = 0xE0D2; // COLD_START
+        self.program_counter = 0xE0D2; // COLD_START (cbmbasic1.bin)
+        self.program_counter = 0xE116; // COLD_START (cbmbasic2.bin)
     }
 
     pub fn run(&mut self) {
@@ -273,20 +274,19 @@ impl CPU {
                   std::io::stdin()
                     .read_line(&mut self.line_input)
                     .unwrap();
-                  self.line_input = self.line_input.replace("\n", "\r\n");
+                  self.line_input = self.line_input.replace("\n", "\r");
                   self.line_index = 0;
                   continue;
                 } else {
                   // 1文字づつ返す
-                  if self.line_input.len() <= self.line_index {
+                  let c = self.line_input.chars().nth(self.line_index).unwrap();
+                  self.register_a = c as u8;
+                  self.line_index += 1;
+                  if self.register_a == 13 {
+                    // CRだったら終わり
                     self.line_input = "".to_string();
-                    continue;
-                  } else {
-                    let c = self.line_input.chars().nth(self.line_index).unwrap();
-                    self.register_a = c as u8;
-                    self.line_index += 1;
-                    self.rts(&AddressingMode::Absolute);
                   }
+                  self.rts(&AddressingMode::Absolute);
                 }
               }
               0xFFE1 => {

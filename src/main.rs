@@ -11,6 +11,7 @@ fn main() {
 
     // load basic rom
     let filepath = "bin/cbmbasic1.bin";
+    let filepath = "bin/cbmbasic2.bin";
     let mut f = File::open(filepath).expect("no file found");
     let metadata = std::fs::metadata(filepath).expect("unable to read metadata");
     let mut buffer = vec![0; metadata.len() as usize];
