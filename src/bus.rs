@@ -49,7 +49,18 @@ impl Mem for Bus {
                 self.cpu_ram[mirror_addr as usize] = data;
             }
             0x8000..=0x8FFF => {
-                println!("SCREEN {:04X} {:02X} {} {}", addr, data, data, data as char);
+              // SCREEN MEMORY
+              match data {
+                0 => {
+                  print!("@");
+                }
+                1..=32 => { // A-Z
+                  print!("{}", (64 + data) as char);
+                }
+                _ => {
+                  print!("{}", data as char);
+                }
+              }
             }
             _ => {
                 todo!("Ignoreing mem write access at {:X} => {:X}", addr, data);
