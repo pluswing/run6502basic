@@ -1,6 +1,7 @@
 mod cpu;
 mod bus;
 mod opscodes;
+mod karnal;
 use self::cpu::CPU;
 use self::bus::Bus;
 use std::fs::File;

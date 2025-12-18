@@ -50,6 +50,7 @@ impl Mem for Bus {
             }
             0x8000..=0x8FFF => {
               // SCREEN MEMORY
+              //   => Easter Egg表示用
               match data {
                 0 => {
                   print!("@");
