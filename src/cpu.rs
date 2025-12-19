@@ -1,6 +1,6 @@
 use log::{debug, info, trace};
 
-use crate::karnal::Karnal;
+use crate::kernal::Kernal;
 use crate::opscodes::{call, CPU_OPS_CODES};
 use crate::bus::{Bus, Mem};
 
@@ -82,7 +82,7 @@ pub struct CPU {
     pub bus: Bus,
 
     add_cycles: u8,
-    karnal: Karnal,
+    kernal: Kernal,
 }
 
 impl Mem for CPU {
@@ -106,7 +106,7 @@ impl CPU {
             stack_pointer: 0xFD,
             bus: bus,
             add_cycles: 0,
-            karnal: Karnal::new(),
+            kernal: Kernal::new(),
         }
     }
 
@@ -235,8 +235,13 @@ impl CPU {
 
     pub fn run(&mut self) {
         loop {
-            if self.karnal.handle(self) {
-              continue;
+            if {
+                let mut kernal = std::mem::take(&mut self.kernal);
+                let handled = kernal.handle(self);
+                self.kernal = kernal;
+                handled
+            } {
+                continue;
             }
 
             let opscode = self.mem_read(self.program_counter);

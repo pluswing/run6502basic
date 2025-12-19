@@ -1,11 +1,12 @@
 use crate::cpu::{AddressingMode, CPU};
 use std::io::{self, Write};
 
-pub struct Karnal {
+#[derive(Default)]
+pub struct Kernal {
   line_input: String,
   line_index: usize,
 }
-impl Karnal {
+impl Kernal {
   pub fn new() -> Self {
     Self {
       line_input: "".to_string(),
